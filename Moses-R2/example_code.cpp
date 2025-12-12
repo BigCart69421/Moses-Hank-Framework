@@ -29,6 +29,11 @@ SOFTWARE.
 #include <SD.h>
 #include <Adafruit_BMP085.h>
 
+
+int samples = 150; // This is the max samples that can be logged.
+int frequency = 1; // This is the frequency of the datalogging
+
+
 float ground = 0;
 float altitude = 0;
 float oldAltitude = 0;
@@ -37,6 +42,8 @@ float change;
 
 bool takeoff = false;
 bool apogee = false;
+
+float speed = frequency * 1000;
 
 int led = 3;
 int buzzer = 8;
@@ -47,7 +54,7 @@ float deltaTime = 0;
 
 unsigned long  lastAction = 0;
 
-float altitudeLog[150] = {0};
+float altitudeLog[samples] = {0};
 
 int CSpin = 4;
 
@@ -89,7 +96,7 @@ void loop(){
     velocity = change / deltaTime;
     if (velocity > 1 || takeoff == true){
         takeoff = true;
-        if (currentTime - lastAction >= 1000 && indexLog < 150) {
+        if (currentTime - lastAction >= speed && indexLog < samples) {
         altitudeLog[indexLog] = altitude;
         indexLog +=1;
         lastAction = currentTime;
@@ -108,11 +115,11 @@ void loop(){
             digitalWrite(led, LOW);
             tone(buzzer, 440, 500);
         }
-        oldTime = currentTime;
-        oldAltitude = altitude;
-
     }
   }
+    oldTime = currentTime;
+    oldAltitude = altitude;
+
 }
     
   
