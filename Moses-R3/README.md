@@ -5,4 +5,6 @@ The Moses R3 template consist of:
 + One Servo Motor (D9)
 + A BME280 over I2C
 + A LED Light
++ A BUZZER
++ 1-2 Pyro Channels (Optional)
 
