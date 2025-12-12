@@ -47,6 +47,9 @@ void setup() {
     currentTime = millis();
 }
 
+void apogee() {
+    
+}
 
 void flying() {
     currentTime = millis();
