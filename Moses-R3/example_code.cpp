@@ -66,14 +66,14 @@ void setup() {
         Serial.println("Baro init failed, check wiring or PCB!");
     }
     Serial.println("Baro init success!");
-    ground = bme.readAltitude();
+    ground = bme.readAltitude();  // Setting Ground height
     Serial.print("Computer Zeroed! Ground Altitude: ");
     Serial.print(ground);
     Serial.println("m");
     currentTime = millis();
     pinMode(led, OUTPUT);
     pinMode(buzzer, OUTPUT);
-    tone(buzzer, 440, 500);
+    tone(buzzer, 440, 500); // Make computer beep and light up
     digitalWrite(led, HIGH);
     delay(1000);
     digitalWrite(led, LOW);
@@ -83,13 +83,13 @@ void setup() {
 
 void loop(){
     currentTime = millis();
-    altitude = bme.readAltitude() - ground;
+    altitude = bme.readAltitude() - ground; // Calculate Delta Time and Velocty
     change = altitude - oldAltitude;
     deltaTime = (currentTime - oldTime) / 1000;
     velocity = change / deltaTime;
     if (velocity > 1 || takeoff == true){
         takeoff = true;
-        if (currentTime - lastAction >= 1000 && logIndex < 150) {
+        if (currentTime - lastAction >= 1000 && logIndex < 150) {    // Flying section of code
         altitudeLog[logIndex] = altitude;
         logIndex +=1;
         lastAction = currentTime;
@@ -97,7 +97,7 @@ void loop(){
     if ((velocity < 2 && takeoff == true) || apogee == true) {
         File data;
         data = SD.open("flight.txt", FILE_WRITE);
-        data.println("Moses R2 Flight Log - Delta Aerospace");
+        data.println("Moses R2 Flight Log - Delta Aerospace"); // Apogee- move flight log over to sd card
         for (int i = 0; i < logIndex i++ ){
             data.println(altitudeLog[i]);
         }
@@ -105,7 +105,7 @@ void loop(){
         while (true) {
             digitalWrite(led, HIGH);
             delay(500);
-            digitalWrite(led, LOW);
+            digitalWrite(led, LOW);  // Stop loop and turn on buzzer and light for locating
             tone(buzzer, 440, 500);
         }
         oldTime = currentTime;
