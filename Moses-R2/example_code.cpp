@@ -1,7 +1,28 @@
 // Moses R2 code example
 // Thank you to Arduino Documentation and Adafruit, as well as numerous open-source contributors fot the libraries
-// and kowledge that enabled me to write this code
+// and knowledge that enabled me to write this code
 
+/* 
+Written by Delta Aerospace, All Rights Reserved. Licensed under MIT License 2
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -9,11 +30,16 @@
 #include <Adafruit_BMP085.h>
 
 float ground = 0;
-float zeroed = 0;
 float altitude = 0;
 float oldAltitude = 0;
 float velocity = 0;
 float change;
+
+bool takeoff = false;
+bool apogee = false;
+
+int led = 3;
+int buzzer = 8;
 
 unsigned long oldTime = 0;
 unsigned long currentTime = 0;
@@ -45,38 +71,44 @@ void setup() {
     Serial.print(ground);
     Serial.println("m");
     currentTime = millis();
+    pinMode(led, OUTPUT);
+    pinMode(buzzer, OUTPUT);
+    tone(buzzer, 440, 500);
+    digitalWrite(led, HIGH);
+    delay(1000);
+    digitalWrite(led, LOW);
 }
 
-void apogee() {
-    
-}
 
-void flying() {
+
+void loop() {;
     currentTime = millis();
-    deltaTime = (currentTime - oldTime) / 1000;
     altitude = bmp.readAltitude() - ground;
     change = altitude - oldAltitude;
+    deltaTime = (currentTime - oldTime) / 1000;
     velocity = change / deltaTime;
-    if (velocity > 2) {
-        apogee();
-    }
-    if (currentTime - lastAction >= 1000 && index < 250) {
+    if (velocity > 1 || takeoff == true) {
+        takeoff = true;
+        if (currentTime - lastAction >= 1000 && index < 250) {
         altitudeLog[index] = altitude;
         index +=1;
         lastAction = currentTime;
     }
-    oldTime = currentTime;
-    oldAltitude = altitude;
-}
+    if ((velocity < 2 && takeoff == true) || apogee == true) {
+        File data;
+        data = SD.open("flight.txt", FILE_WRITE);
+        data.println("Moses R2 Flight Log - Delta Aerospace");
+        for (int i = 0; i < index; i++ ){
+            data.println(altitudeLog[i]);
+        }
+        data.close();
+        while (true) {
+            digitalWrite(led, HIGH);
+            delay(500);
+            digitalWrite(led, LOW);
+            tone(buzzer, 440, 500);
+        }
 
-void loop() {
-    currentTime = millis();
-    altitude = bmp.readAltitude() - ground;
-    change = altitude - oldAltitude;
-    deltaTime = (currentTime - oldTime) / 1000;
-    velocity = change / deltaTime;
-    if (velocity > 1) {
-        flying();
     }
     oldTime = currentTime;
     oldAltitude = altitude;
