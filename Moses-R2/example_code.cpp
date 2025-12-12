@@ -47,7 +47,7 @@ float deltaTime = 0;
 
 unsigned long  lastAction = 0;
 
-float altitudeLog[250] = {0};
+float altitudeLog[150] = {0};
 
 int CSpin = 4;
 
@@ -81,15 +81,15 @@ void setup() {
 
 
 
-void loop() {
+void loop(){
     currentTime = millis();
     altitude = bmp.readAltitude() - ground;
     change = altitude - oldAltitude;
     deltaTime = (currentTime - oldTime) / 1000;
     velocity = change / deltaTime;
-    if (velocity > 1 || takeoff == true) {
+    if (velocity > 1 || takeoff == true){
         takeoff = true;
-        if (currentTime - lastAction >= 1000 && index < 250) {
+        if (currentTime - lastAction >= 1000 && index < 150) {
         altitudeLog[index] = altitude;
         index +=1;
         lastAction = currentTime;
@@ -108,8 +108,11 @@ void loop() {
             digitalWrite(led, LOW);
             tone(buzzer, 440, 500);
         }
+        oldTime = currentTime;
+        oldAltitude = altitude;
 
     }
-    oldTime = currentTime;
-    oldAltitude = altitude;
+  }
 }
+    
+  
