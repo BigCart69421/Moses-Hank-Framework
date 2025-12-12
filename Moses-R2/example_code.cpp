@@ -51,7 +51,7 @@ float altitudeLog[150] = {0};
 
 int CSpin = 4;
 
-int index = 0;
+int indexLog = 0;
 
 Adafruit_BMP085 bmp;
 
@@ -89,16 +89,16 @@ void loop(){
     velocity = change / deltaTime;
     if (velocity > 1 || takeoff == true){
         takeoff = true;
-        if (currentTime - lastAction >= 1000 && index < 150) {
-        altitudeLog[index] = altitude;
-        index +=1;
+        if (currentTime - lastAction >= 1000 && indexLog < 150) {
+        altitudeLog[indexLog] = altitude;
+        indexLog +=1;
         lastAction = currentTime;
     }
     if ((velocity < 2 && takeoff == true) || apogee == true) {
         File data;
         data = SD.open("flight.txt", FILE_WRITE);
         data.println("Moses R2 Flight Log - Delta Aerospace");
-        for (int i = 0; i < index; i++ ){
+        for (int i = 0; i < indexLog; i++ ){
             data.println(altitudeLog[i]);
         }
         data.close();
