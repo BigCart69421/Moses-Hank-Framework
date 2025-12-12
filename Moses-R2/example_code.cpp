@@ -56,7 +56,7 @@ unsigned long  lastAction = 0;
 
 float altitudeLog[samples] = {0};
 
-int CSpin = 4;
+int CSpin = 10;
 
 int indexLog = 0;
 
