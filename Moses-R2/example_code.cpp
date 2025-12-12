@@ -5,7 +5,7 @@
 
 #include <Arduino.h>
 #include <SPI.h>
-#include <SD.h
+#include <SD.h>
 #include <Adafruit_BMP085.h>
 
 float ground = 0;
@@ -17,7 +17,7 @@ float change;
 
 unsigned long oldTime = 0;
 unsigned long currentTime = 0;
-unsigned long deltaTime = 0;
+float deltaTime = 0;
 
 int CSpin = 4;
 
@@ -25,7 +25,7 @@ Adafruit_BMP085 bmp;
 
 
 void setup() {
-    Serial.begin(9600)
+    Serial.begin(9600);
     if (!SD.begin(CSpin)){
         Serial.println("SD Init Error, check wiring or if card installed!");
     }
@@ -54,6 +54,7 @@ void loop() {
     deltaTime = (currentTime - oldTime) / 1000;
     velocity = change / deltaTime;
     if (velocity > 1) {
-        flying()
+        flying();
     }
+    oldTime = currentTime;
 }
