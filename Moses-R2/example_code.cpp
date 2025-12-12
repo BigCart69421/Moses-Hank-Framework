@@ -19,7 +19,13 @@ unsigned long oldTime = 0;
 unsigned long currentTime = 0;
 float deltaTime = 0;
 
+unsigned long  lastAction = 0;
+
+float altitudeLog[250] = {0};
+
 int CSpin = 4;
+
+int index = 0;
 
 Adafruit_BMP085 bmp;
 
@@ -43,11 +49,24 @@ void setup() {
 
 
 void flying() {
-
+    currentTime = millis();
+    deltaTime = (currentTime - oldTime) / 1000;
+    altitude = bmp.readAltitude() - ground;
+    change = altitude - oldAltitude;
+    velocity = change / deltaTime;
+    if (velocity > 2) {
+        apogee();
+    }
+    if (currentTime - lastAction >= 1000 && index < 250) {
+        altitudeLog[index] = altitude;
+        index +=1;
+        lastAction = currentTime;
+    }
+    oldTime = currentTime;
+    oldAltitude = altitude;
 }
 
 void loop() {
-    oldAltitude = altitude;
     currentTime = millis();
     altitude = bmp.readAltitude() - ground;
     change = altitude - oldAltitude;
@@ -57,4 +76,5 @@ void loop() {
         flying();
     }
     oldTime = currentTime;
+    oldAltitude = altitude;
 }
