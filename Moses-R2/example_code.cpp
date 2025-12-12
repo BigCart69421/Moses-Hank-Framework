@@ -81,7 +81,7 @@ void setup() {
 
 
 
-void loop() {;
+void loop() {
     currentTime = millis();
     altitude = bmp.readAltitude() - ground;
     change = altitude - oldAltitude;
