@@ -41,6 +41,11 @@ void setup() {
     currentTime = millis();
 }
 
+
+void flying() {
+
+}
+
 void loop() {
     oldAltitude = altitude;
     currentTime = millis();
@@ -48,6 +53,7 @@ void loop() {
     change = altitude - oldAltitude;
     deltaTime = (currentTime - oldTime) / 1000;
     velocity = change / deltaTime;
-    if (velocity > 1) {}
-
+    if (velocity > 1) {
+        flying()
+    }
 }
